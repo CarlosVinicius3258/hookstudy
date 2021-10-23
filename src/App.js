@@ -4,40 +4,21 @@ import React, {
 } from 'react'
 
 function App() {
-    const [repositories, setRepositories] = useState([])
+    const [location, setLocation] = useState({})
 
-
-    //Puxa os dados do repositóiro, só atualiza uma vez
-    useEffect(async () => {
-            const response = await fetch('https://api.github.com/users/CarlosVinicius3258/repos')
-            const data = await response.json();
-            setRepositories(data);
-    }, [])
-
-
-    //Gatilhar atualização de componente apenas quando {repositories} for alterado
     useEffect(()=>{
-        const filtered = repositories.filter(repo => repo.favorite)
-        document.title =  `Você tem ${filtered.length} favoritos!`
-    },[repositories])
-    const handleFavorite = id => {
-        const newRepositories = repositories.map(repo => {
-            return repo.id === id? {...repo, favorite: !repo.favorite} : repo
-        })
-        setRepositories(newRepositories)
+        navigator.geolocation.watchPosition(handlePosition)
+    }, [])
+    const handlePosition = ({coords}) => {
+        const {latitude, longitude} = coords;
+        setLocation({latitude, longitude});
     }
     return ( 
       <div className = "App" >
-        <ul>
-            {repositories.map(repo=>(
-              <li key={repo.id}>
-                  {repo.name}
-                  {repo.favorite && <span>x</span>}
-                  <button onClick={() => handleFavorite(repo.id)}>Favoritar</button>
-              </li> 
-               
-            ))}
-        </ul>
+        <>
+            Latitude: {location.latitude} <br />
+            Longitude: {location.longitude}
+        </>
        </div>
     );
 }
